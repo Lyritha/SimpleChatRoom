@@ -1,4 +1,6 @@
-﻿namespace StdbModule
+﻿using SpacetimeDB;
+
+namespace StdbModule
 {
     public static partial class Module
     {
