@@ -7,21 +7,23 @@ namespace StdbModule
         [Reducer(ReducerKind.ClientConnected)]
         public static void ClientConnected(ReducerContext ctx)
         {
-            Log.Info($"Connect {ctx.Sender}");
-            var user = ctx.Db.user.Identity.Find(ctx.Sender);
+            User? user = ctx.Db.user.Identity.Find(ctx.Sender);
 
             if (user is null)
             {
+                Log.Info("Creating new user...");
+
                 user = new User
                 {
                     Identity = ctx.Sender,
-                    Settings = new UserSettings(),
+                    Settings = new UserSettings(name: "", color: "#FFFFFF")
                 };
 
                 ctx.Db.user.Insert(user);
             }
 
             user.Online = true;
+            Log.Info($"Client connected: {user}");
             ctx.Db.user.Identity.Update(user);
         }
 

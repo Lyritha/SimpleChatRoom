@@ -1,5 +1,12 @@
 {
   "dependencies": {
+    "com.clockworklabs.spacetimedbsdk": {
+      "version": "https://github.com/clockworklabs/com.clockworklabs.spacetimedbsdk.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "2e6ce4443fe211d766b8d29e03bcf018f5f99156"
+    },
     "com.unity.2d.animation": {
       "version": "10.1.4",
       "depth": 1,
@@ -188,6 +195,13 @@
     "com.unity.nuget.mono-cecil": {
       "version": "1.11.4",
       "depth": 3,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.nuget.newtonsoft-json": {
+      "version": "3.2.1",
+      "depth": 0,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
