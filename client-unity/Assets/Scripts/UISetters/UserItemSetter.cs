@@ -1,16 +1,23 @@
+using SpacetimeDB.Types;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UserItemSetter : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField]
+    private Image onlineImage;
+    [SerializeField]
+    private TMP_Text usernameField;
 
-    // Update is called once per frame
-    void Update()
+    public void SetData(User user)
     {
-        
+        onlineImage.color = user.Online ? Color.green : Color.red;
+        usernameField.text = user.Settings.Name;
+
+        if (ColorUtility.TryParseHtmlString(user.Settings.Color, out Color color))
+        {
+            //usernameField.color = color;
+        }
     }
 }

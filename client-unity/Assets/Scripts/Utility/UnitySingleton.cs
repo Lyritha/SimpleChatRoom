@@ -33,8 +33,10 @@ public abstract class UnitySingleton<T> : MonoBehaviour where T : UnitySingleton
         {
             Debug.LogWarning($"[Singleton] Another instance of {typeof(T)} detected. Destroying {gameObject.name}.");
             Destroy(gameObject);
-            return;
         }
+
+        // for some reason doesn't work if in the if statement
+        DontDestroyOnLoad(gameObject);
     }
 
     private void OnDestroy()
@@ -45,4 +47,3 @@ public abstract class UnitySingleton<T> : MonoBehaviour where T : UnitySingleton
         }
     }
 }
-

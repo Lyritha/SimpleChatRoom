@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -23,8 +22,12 @@ public class NetworkManager : UnitySingleton<NetworkManager>
     private const string AUTH0_REDIRECT_URI = "http://localhost:5000/callback/";
     private const string AUTH0_SCOPE = "openid profile email";
 
-    public DbConnection Conn { get; private set; }
-    private Identity localIdentity;
+    public DbConnection Connection { get; private set; }
+    public bool IsConnected { get; private set; } = false;
+    public Identity LocalIdentity { get; private set; }
+
+    public event Action<DbConnection> OnConnectedToDB;
+    public event Action<DbConnection> OnDisconnectedToDB;
 
     private void Start()
     {
@@ -42,7 +45,7 @@ public class NetworkManager : UnitySingleton<NetworkManager>
         {
             string token = await GetValidTokenAsync();
 
-            Conn = DbConnection.Builder()
+            Connection = DbConnection.Builder()
                 .WithUri(HOST)
                 .WithModuleName(DB_NAME)
                 .WithToken(token)
@@ -80,8 +83,6 @@ public class NetworkManager : UnitySingleton<NetworkManager>
         PlayerPrefs.SetString("SpacetimeDB_IdToken", token);
         return token;
     }
-
-
 
 
     /// <summary>
@@ -143,21 +144,27 @@ public class NetworkManager : UnitySingleton<NetworkManager>
 
     private void OnConnected(DbConnection conn, Identity identity, string authToken)
     {
-        ScreenLogger.Instance.Log("Connected to server");
+        Debug.Log("Connected to server");
 
-        localIdentity = identity;
+        LocalIdentity = identity;
 
         conn.SubscriptionBuilder()
-            .OnApplied(ctx => {})
+            .OnApplied(ctx => {
+                OnConnectedToDB?.Invoke(conn);
+                IsConnected = true;
+            })
             .SubscribeToAllTables();
     }
     private void OnDisconnected(DbConnection conn, Exception? e)
     {
-        if (e != null) ScreenLogger.Instance.Log($"Disconnected abnormally: {e}");
-        else ScreenLogger.Instance.Log("Disconnected normally.");
+        if (e != null) Debug.Log($"Disconnected abnormally: {e}");
+        else Debug.Log("Disconnected normally.");
+
+        OnDisconnectedToDB?.Invoke(conn);
+        IsConnected = false;
     }
 
     private void OnConnectError(Exception e)
-        => ScreenLogger.Instance.Log($"Error while connecting: {e}");
+        => Debug.Log($"Error while connecting: {e}");
 
 }
