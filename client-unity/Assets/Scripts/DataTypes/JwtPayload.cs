@@ -1,7 +1,7 @@
 using System;
 
 [Serializable]
-public class JwtPayload
+public struct JwtPayload
 {
     public long exp;
 }

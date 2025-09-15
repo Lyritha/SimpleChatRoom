@@ -139,7 +139,7 @@ public class NetworkManager : UnitySingleton<NetworkManager>
         var res = await client.PostAsync($"https://{AUTH0_DOMAIN}/oauth/token", new FormUrlEncodedContent(tokenRequest));
         res.EnsureSuccessStatusCode();
         var token = JsonConvert.DeserializeObject<TokenResponse>(await res.Content.ReadAsStringAsync());
-        return token?.id_token ?? throw new Exception("Failed to get ID token");
+        return token.id_token ?? throw new Exception("Failed to get ID token");
     }
 
     private void OnConnected(DbConnection conn, Identity identity, string authToken)

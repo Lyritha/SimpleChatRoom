@@ -1,6 +1,6 @@
-public class TokenResponse
+public struct TokenResponse
 {
-    public string access_token { get; set; } = "";
-    public string id_token { get; set; } = "";
-    public string token_type { get; set; } = "";
+    public string access_token;
+    public string id_token;
+    public string token_type;
 }
