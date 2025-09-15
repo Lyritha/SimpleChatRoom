@@ -1,0 +1,5 @@
+invalid hex causes name to disappear
+messages with space can be sent
+new users with no name still show up in side bar
+message input doesn't re-focus
+usernames need to be unique
