@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Newtonsoft.Json;
 using Debug = UnityEngine.Debug;
+using Random = UnityEngine.Random;
 
 public class NetworkManager : UnitySingleton<NetworkManager>
 {
@@ -19,7 +20,7 @@ public class NetworkManager : UnitySingleton<NetworkManager>
     // Auth0 OIDC info
     private const string AUTH0_DOMAIN = "dev-oiaipmk58n86ow7t.us.auth0.com";
     private const string AUTH0_CLIENT_ID = "OeYtJn4B3yFwA701SuKJzllqFmL6QZ9u";
-    private const string AUTH0_REDIRECT_URI = "http://localhost:5000/callback/";
+    private string AUTH0_REDIRECT_URI;
     private const string AUTH0_SCOPE = "openid profile email";
 
     public DbConnection Connection { get; private set; }
@@ -34,6 +35,9 @@ public class NetworkManager : UnitySingleton<NetworkManager>
         Application.targetFrameRate = 60;
         Application.runInBackground = true;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
+
+        int port = Random.Range(49152, 65535); // high dynamic ports
+        AUTH0_REDIRECT_URI = $"http://localhost:{port}/callback/";
 
         // Start async initialization without blocking main thread
         InitializeConnectionAsync();

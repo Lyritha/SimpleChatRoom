@@ -13,27 +13,31 @@ namespace SpacetimeDB.Types
 {
     [SpacetimeDB.Type]
     [DataContract]
-    public sealed partial class User
+    public sealed partial class UserTable
     {
         [DataMember(Name = "Identity")]
         public SpacetimeDB.Identity Identity;
         [DataMember(Name = "Online")]
         public bool Online;
+        [DataMember(Name = "AuthorityLevel")]
+        public AuthorityLevel AuthorityLevel;
         [DataMember(Name = "Settings")]
         public UserSettings Settings;
 
-        public User(
+        public UserTable(
             SpacetimeDB.Identity Identity,
             bool Online,
+            AuthorityLevel AuthorityLevel,
             UserSettings Settings
         )
         {
             this.Identity = Identity;
             this.Online = Online;
+            this.AuthorityLevel = AuthorityLevel;
             this.Settings = Settings;
         }
 
-        public User()
+        public UserTable()
         {
             this.Settings = new();
         }

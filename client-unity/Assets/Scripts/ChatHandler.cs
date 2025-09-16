@@ -21,7 +21,7 @@ public class ChatHandler : NetworkedMonobehavior
 
     protected override void OnConnectedToDB(DbConnection connection)
     {
-        foreach (Message message in connection.Db.Message.Iter().OrderBy(m => m.Sent))
+        foreach (MessageTable message in connection.Db.Message.Iter().OrderBy(m => m.Sent))
         {
             CreateItem(null, message);
         }
@@ -39,7 +39,7 @@ public class ChatHandler : NetworkedMonobehavior
     }
 
 
-    private void CreateItem(EventContext ctx = null, Message message = null)
+    private void CreateItem(EventContext ctx = null, MessageTable message = null)
     {
         RunOnMainThread(() =>
         {
@@ -65,7 +65,7 @@ public class ChatHandler : NetworkedMonobehavior
         });
     }
 
-    private void UpdateItem(EventContext ctx, Message oldValue, Message newValue)
+    private void UpdateItem(EventContext ctx, MessageTable oldValue, MessageTable newValue)
     {
         RunOnMainThread(() =>
         {
@@ -74,7 +74,7 @@ public class ChatHandler : NetworkedMonobehavior
         });
     }
 
-    private void UpdateUsernameInMessage(EventContext context, User oldRow, User newRow)
+    private void UpdateUsernameInMessage(EventContext context, UserTable oldRow, UserTable newRow)
     {
         RunOnMainThread(() =>
         {

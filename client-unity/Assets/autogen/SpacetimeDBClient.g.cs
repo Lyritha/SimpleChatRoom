@@ -23,6 +23,7 @@ namespace SpacetimeDB.Types
     {
         public RemoteTables(DbConnection conn)
         {
+            AddTable(ClientRules = new(conn));
             AddTable(Message = new(conn));
             AddTable(User = new(conn));
         }
@@ -472,6 +473,10 @@ namespace SpacetimeDB.Types
                 "ClientDisconnected" => BSATNHelpers.Decode<Reducer.ClientDisconnected>(encodedArgs),
                 "SendMessage" => BSATNHelpers.Decode<Reducer.SendMessage>(encodedArgs),
                 "SetUserSettings" => BSATNHelpers.Decode<Reducer.SetUserSettings>(encodedArgs),
+                "UpdateClientRules" => BSATNHelpers.Decode<Reducer.UpdateClientRules>(encodedArgs),
+                "UpdateMessage" => BSATNHelpers.Decode<Reducer.UpdateMessage>(encodedArgs),
+                "UpdateUserAuthority" => BSATNHelpers.Decode<Reducer.UpdateUserAuthority>(encodedArgs),
+                "UpdateUserAuthorityFromString" => BSATNHelpers.Decode<Reducer.UpdateUserAuthorityFromString>(encodedArgs),
                 var reducer => throw new ArgumentOutOfRangeException("Reducer", $"Unknown reducer {reducer}")
             };
         }
@@ -497,6 +502,10 @@ namespace SpacetimeDB.Types
                 Reducer.ClientDisconnected args => Reducers.InvokeClientDisconnected(eventContext, args),
                 Reducer.SendMessage args => Reducers.InvokeSendMessage(eventContext, args),
                 Reducer.SetUserSettings args => Reducers.InvokeSetUserSettings(eventContext, args),
+                Reducer.UpdateClientRules args => Reducers.InvokeUpdateClientRules(eventContext, args),
+                Reducer.UpdateMessage args => Reducers.InvokeUpdateMessage(eventContext, args),
+                Reducer.UpdateUserAuthority args => Reducers.InvokeUpdateUserAuthority(eventContext, args),
+                Reducer.UpdateUserAuthorityFromString args => Reducers.InvokeUpdateUserAuthorityFromString(eventContext, args),
                 _ => throw new ArgumentOutOfRangeException("Reducer", $"Unknown reducer {reducer}")
             };
         }

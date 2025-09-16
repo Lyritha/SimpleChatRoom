@@ -3,21 +3,19 @@ using System.Collections.Concurrent;
 using System.Threading;
 using UnityEngine;
 
-public class InputManager : UnitySingleton<InputManager>
+public class InputManager : NetworkedSingleton<InputManager>
 {
     private readonly ConcurrentQueue<DbCommand> input_queue = new();
 
-    private void Start()
+    protected override void OnConnectedToDB(DbConnection connection)
     {
-        NetworkManager.Instance.OnConnectedToDB += OnConnectedToDB;
-    }
-
-    private void OnConnectedToDB(DbConnection connection)
-    {
-        // You could spin up your process thread here if desired
         var cts = new CancellationTokenSource();
         var thread = new Thread(() => ProcessThread(connection, cts.Token));
         thread.Start();
+    }
+
+    protected override void OnDisconnectedToDB(DbConnection connection)
+    {
     }
 
     private void ProcessThread(DbConnection conn, CancellationToken ct)

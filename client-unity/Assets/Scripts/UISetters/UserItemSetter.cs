@@ -10,7 +10,7 @@ public class UserItemSetter : MonoBehaviour
     [SerializeField]
     private TMP_Text usernameField;
 
-    public void SetData(User user)
+    public void SetData(UserTable user)
     {
         onlineImage.color = user.Online ? Color.green : Color.red;
         usernameField.text = user.Settings.Name;

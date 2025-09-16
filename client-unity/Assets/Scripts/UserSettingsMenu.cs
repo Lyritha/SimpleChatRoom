@@ -29,7 +29,7 @@ public class UserSettingsMenu : NetworkedMonobehavior
 
         Identity identity = NetworkManager.Instance.LocalIdentity;
         DbConnection conn = NetworkManager.Instance.Connection;
-        User user = conn.Db.User.Identity.Find(identity);
+        UserTable user = conn.Db.User.Identity.Find(identity);
 
         usernameField.text = user.Settings.Name;
         colorHexField.text = user.Settings.Color;

@@ -11,10 +11,10 @@ public class MessageItemSetter : MonoBehaviour
     [SerializeField]
     private TMP_Text textField;
 
-    private Message itemData;
+    private MessageTable itemData;
 
 
-    public void SetData(Message data)
+    public void SetData(MessageTable data)
     {
         var user = NetworkManager.Instance.Connection.Db.User.Identity.Find(data.Sender);
         itemData = data;

@@ -19,14 +19,18 @@ namespace SpacetimeDB.Types
         public string Text;
         [DataMember(Name = "ChannelID")]
         public string ChannelId;
+        [DataMember(Name = "MessageId")]
+        public ulong MessageId;
 
         public MessageData(
             string Text,
-            string ChannelId
+            string ChannelId,
+            ulong MessageId
         )
         {
             this.Text = Text;
             this.ChannelId = ChannelId;
+            this.MessageId = MessageId;
         }
 
         public MessageData()

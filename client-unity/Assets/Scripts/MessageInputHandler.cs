@@ -9,7 +9,7 @@ public class MessageInputHandler : MonoBehaviour
 
     public void SendMessage()
     {
-        MessageData data = new(inputField.text, "");
+        MessageData data = new(inputField.text, "", ulong.MaxValue);
         InputManager.Instance.EnqueueCommand("SendMessage", data);
 
         inputField.text = "";

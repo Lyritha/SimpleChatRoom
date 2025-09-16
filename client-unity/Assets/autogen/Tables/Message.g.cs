@@ -15,13 +15,25 @@ namespace SpacetimeDB.Types
 {
     public sealed partial class RemoteTables
     {
-        public sealed class MessageHandle : RemoteTableHandle<EventContext, Message>
+        public sealed class MessageHandle : RemoteTableHandle<EventContext, MessageTable>
         {
-            protected override string RemoteTableName => "message";
+            protected override string RemoteTableName => "Message";
+
+            public sealed class MessageIdUniqueIndex : UniqueIndexBase<ulong>
+            {
+                protected override ulong GetKey(MessageTable row) => row.MessageId;
+
+                public MessageIdUniqueIndex(MessageHandle table) : base(table) { }
+            }
+
+            public readonly MessageIdUniqueIndex MessageId;
 
             internal MessageHandle(DbConnection conn) : base(conn)
             {
+                MessageId = new(this);
             }
+
+            protected override object GetPrimaryKey(MessageTable row) => row.MessageId;
         }
 
         public readonly MessageHandle Message;

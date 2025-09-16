@@ -15,7 +15,7 @@ public class UserListHandler : NetworkedMonobehavior
 
     protected override void OnConnectedToDB(DbConnection connection)
     {
-        foreach (User user in connection.Db.User.Iter().OrderBy(m => m.Identity))
+        foreach (UserTable user in connection.Db.User.Iter().OrderBy(m => m.Identity))
         {
             if (!string.IsNullOrEmpty(user.Settings.Name))
             {
@@ -34,7 +34,7 @@ public class UserListHandler : NetworkedMonobehavior
     }
 
 
-    private void CreateItem(EventContext ctx = null, User user = null)
+    private void CreateItem(EventContext ctx = null, UserTable user = null)
     {
         RunOnMainThread(() =>
         {
@@ -46,7 +46,7 @@ public class UserListHandler : NetworkedMonobehavior
         });
     }
 
-    private void UpdateItem(EventContext ctx, User oldValue, User newValue)
+    private void UpdateItem(EventContext ctx, UserTable oldValue, UserTable newValue)
     {
         if (string.IsNullOrEmpty(oldValue.Settings.Name) && !string.IsNullOrEmpty(newValue.Settings.Name))
         {

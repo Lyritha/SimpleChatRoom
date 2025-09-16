@@ -13,8 +13,10 @@ namespace SpacetimeDB.Types
 {
     [SpacetimeDB.Type]
     [DataContract]
-    public sealed partial class Message
+    public sealed partial class MessageTable
     {
+        [DataMember(Name = "MessageId")]
+        public ulong MessageId;
         [DataMember(Name = "Sender")]
         public SpacetimeDB.Identity Sender;
         [DataMember(Name = "Sent")]
@@ -23,21 +25,27 @@ namespace SpacetimeDB.Types
         public string ChannelId;
         [DataMember(Name = "Text")]
         public string Text;
+        [DataMember(Name = "HasBeenEdited")]
+        public bool HasBeenEdited;
 
-        public Message(
+        public MessageTable(
+            ulong MessageId,
             SpacetimeDB.Identity Sender,
             SpacetimeDB.Timestamp Sent,
             string ChannelId,
-            string Text
+            string Text,
+            bool HasBeenEdited
         )
         {
+            this.MessageId = MessageId;
             this.Sender = Sender;
             this.Sent = Sent;
             this.ChannelId = ChannelId;
             this.Text = Text;
+            this.HasBeenEdited = HasBeenEdited;
         }
 
-        public Message()
+        public MessageTable()
         {
             this.ChannelId = "";
             this.Text = "";

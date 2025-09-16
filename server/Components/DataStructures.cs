@@ -1,4 +1,5 @@
 ﻿using SpacetimeDB;
+using System.Buffers;
 
 namespace StdbModule
 {
@@ -26,13 +27,22 @@ namespace StdbModule
         {
             public string Text;
             public string ChannelID;
+            public ulong MessageId;
 
-            public MessageData(string text = "", string channelID = "")
+            public MessageData(string text = "", string channelID = "", ulong messageId = ulong.MaxValue)
             {
                 Text = text;
                 ChannelID = channelID;
+                MessageId = messageId;
             }
         }
 
+        [SpacetimeDB.Type]
+        public enum AuthorityLevel
+        {
+            User,
+            Admin,
+            Owner
+        }
     }
 }
