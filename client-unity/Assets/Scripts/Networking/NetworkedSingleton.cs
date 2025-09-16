@@ -1,3 +1,4 @@
+using SpacetimeDB;
 using SpacetimeDB.Types;
 using UnityEngine;
 
@@ -48,7 +49,7 @@ public abstract class NetworkedSingleton<T> : NetworkedMonobehavior where T : Ne
         }
     }
 
-    protected abstract override void OnConnectedToDB(DbConnection connection);
+    protected abstract override void OnConnectedToDB(DbConnection connection, Identity identity);
 
     protected abstract override void OnDisconnectedToDB(DbConnection connection);
 }

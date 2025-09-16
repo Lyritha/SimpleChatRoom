@@ -1,6 +1,7 @@
 using SpacetimeDB;
 using SpacetimeDB.Types;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections.LowLevel.Unsafe;
@@ -19,7 +20,7 @@ public class ChatHandler : NetworkedMonobehavior
     private Dictionary<Identity, List<MessageItemSetter>> items = new();
 
 
-    protected override void OnConnectedToDB(DbConnection connection)
+    protected override void OnConnectedToDB(DbConnection connection, Identity identity)
     {
         foreach (MessageTable message in connection.Db.Message.Iter().OrderBy(m => m.Sent))
         {

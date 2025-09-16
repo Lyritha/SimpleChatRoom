@@ -7,11 +7,26 @@ public class MessageInputHandler : MonoBehaviour
     [SerializeField]
     private TMP_InputField inputField;
 
-    public void SendMessage()
+    private void Start()
     {
-        MessageData data = new(inputField.text, "", ulong.MaxValue);
-        InputManager.Instance.EnqueueCommand("SendMessage", data);
+        inputField.onSubmit.AddListener(text =>
+        {
+            ProcessMessageInput(text);
+        });
+    }
 
-        inputField.text = "";
+    public void ProcessMessageInput(string input)
+    {
+        string text = input.Trim();
+
+        if (!string.IsNullOrWhiteSpace(text))
+        {
+            MessageData data = new(text, "", ulong.MaxValue);
+            InputManager.Instance.EnqueueCommand("SendMessage", data);
+
+            inputField.text = "";
+        }
+
+        inputField.ActivateInputField();
     }
 }

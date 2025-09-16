@@ -1,3 +1,4 @@
+using SpacetimeDB;
 using SpacetimeDB.Types;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,8 @@ using UnityEngine;
 public abstract class NetworkedMonobehavior : MonoBehaviour
 {
     protected bool isConnected = false;
+    protected DbConnection connection;
+    protected Identity localIdentity;
 
     // Queue for actions that must run on Unity's main thread
     private readonly Queue<Action> _mainThreadQueue = new Queue<Action>();
@@ -24,7 +27,7 @@ public abstract class NetworkedMonobehavior : MonoBehaviour
         // If already connected, catch up immediately
         if (NetworkManager.Instance.IsConnected && !isConnected)
         {
-            OnConnected(NetworkManager.Instance.Connection);
+            OnConnected(NetworkManager.Instance.Connection, NetworkManager.Instance.LocalIdentity);
         }
     }
 
@@ -37,15 +40,18 @@ public abstract class NetworkedMonobehavior : MonoBehaviour
         }
     }
 
-    private void OnConnected(DbConnection connection)
+    private void OnConnected(DbConnection connection, Identity identity)
     {
         isConnected = true;
-        OnConnectedToDB(connection);
+        this.connection = connection;
+        this.localIdentity = identity;
+        OnConnectedToDB(connection, identity);
     }
 
     private void OnDisconnected(DbConnection connection)
     {
         isConnected = false;
+        this.connection = null;
         OnDisconnectedToDB(connection);
     }
 
@@ -80,7 +86,7 @@ public abstract class NetworkedMonobehavior : MonoBehaviour
     /// Override this in your subclass to perform initialization that depends on the DB.
     /// </summary>
     /// <param name="connection">The active DbConnection.</param>
-    protected abstract void OnConnectedToDB(DbConnection connection);
+    protected abstract void OnConnectedToDB(DbConnection connection, Identity identity);
 
     /// <summary>
     /// Called when the connection to SpacetimeDB is lost or closed.

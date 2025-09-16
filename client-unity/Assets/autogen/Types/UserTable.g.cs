@@ -21,25 +21,38 @@ namespace SpacetimeDB.Types
         public bool Online;
         [DataMember(Name = "AuthorityLevel")]
         public AuthorityLevel AuthorityLevel;
-        [DataMember(Name = "Settings")]
-        public UserSettings Settings;
+        [DataMember(Name = "Name")]
+        public string Name;
+        [DataMember(Name = "Color")]
+        public string Color;
+        [DataMember(Name = "ConnectSoundID")]
+        public int ConnectSoundId;
+        [DataMember(Name = "DisconnectSoundID")]
+        public int DisconnectSoundId;
 
         public UserTable(
             SpacetimeDB.Identity Identity,
             bool Online,
             AuthorityLevel AuthorityLevel,
-            UserSettings Settings
+            string Name,
+            string Color,
+            int ConnectSoundId,
+            int DisconnectSoundId
         )
         {
             this.Identity = Identity;
             this.Online = Online;
             this.AuthorityLevel = AuthorityLevel;
-            this.Settings = Settings;
+            this.Name = Name;
+            this.Color = Color;
+            this.ConnectSoundId = ConnectSoundId;
+            this.DisconnectSoundId = DisconnectSoundId;
         }
 
         public UserTable()
         {
-            this.Settings = new();
+            this.Name = "";
+            this.Color = "";
         }
     }
 }

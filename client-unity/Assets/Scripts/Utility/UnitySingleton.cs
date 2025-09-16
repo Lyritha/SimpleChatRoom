@@ -1,8 +1,10 @@
+using UnityEditor;
 using UnityEngine;
 
 public abstract class UnitySingleton<T> : MonoBehaviour where T : UnitySingleton<T>
 {
     private static T _instance;
+    private static bool _isDestroying = false;
 
     public static T Instance
     {
@@ -11,14 +13,12 @@ public abstract class UnitySingleton<T> : MonoBehaviour where T : UnitySingleton
             if (_instance == null)
             {
                 _instance = FindFirstObjectByType<T>();
-
-                if (_instance == null)
+                if (_instance == null && Application.isPlaying && !_isDestroying)
                 {
                     GameObject singletonObject = new GameObject(typeof(T).Name);
                     _instance = singletonObject.AddComponent<T>();
                 }
             }
-
             return _instance;
         }
     }
@@ -41,9 +41,7 @@ public abstract class UnitySingleton<T> : MonoBehaviour where T : UnitySingleton
 
     private void OnDestroy()
     {
-        if (_instance == this)
-        {
-            _instance = null;
-        }
+        _isDestroying = true;
+        if (_instance == this) _instance = null;
     }
 }

@@ -4,27 +4,33 @@ namespace StdbModule
 {
     public static partial class Module
     {
+        [Reducer(ReducerKind.Init)]
+        public static void Init(ReducerContext ctx)
+        {
+            // Ensure there's always one ClientRulesTable entry with Id = 0
+            var rules = ctx.Db.ClientUpdates.ClientVersion.Find(1);
+            if (rules is null)
+            {
+                ctx.Db.ClientUpdates.Insert(new ClientUpdatesTable
+                {
+                    ClientVersion = 1,
+                    MinimumConnectionLevel = AuthorityLevel.User,
+                    Reason = "Initial Rules"
+                });
+            }
+        }
+
         [Reducer(ReducerKind.ClientConnected)]
         public static void ClientConnected(ReducerContext ctx)
         {
             UserTable? user = ctx.Db.User.Identity.Find(ctx.Sender);
 
-            if (user is null)
+            if (user is not null)
             {
-                Log.Info("Creating new user...");
-
-                user = new UserTable
-                {
-                    Identity = ctx.Sender,
-                    Settings = new UserSettings(name: "", color: "#FFFFFF")
-                };
-
-                ctx.Db.User.Insert(user);
+                user.Online = true;
+                Log.Info($"Client connected: {user}");
+                ctx.Db.User.Identity.Update(user);
             }
-
-            user.Online = true;
-            Log.Info($"Client connected: {user}");
-            ctx.Db.User.Identity.Update(user);
         }
 
 
@@ -37,11 +43,6 @@ namespace StdbModule
             {
                 user.Online = false;
                 ctx.Db.User.Identity.Update(user);
-            }
-            else
-            {
-                // User does not exist, log warning
-                Log.Warn("Warning: No user found for disconnected client.");
             }
         }
     }

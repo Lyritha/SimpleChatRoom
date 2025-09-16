@@ -7,17 +7,19 @@ using UnityEngine;
 public class UserListHandler : NetworkedMonobehavior
 {
     [SerializeField]
-    private RectTransform container;
+    private RectTransform onlineContainer;
+    [SerializeField]
+    private RectTransform offlineContainer;
     [SerializeField]
     private UserItemSetter prefab;
     [SerializeField]
     private Dictionary<Identity, UserItemSetter> items = new();
 
-    protected override void OnConnectedToDB(DbConnection connection)
+    protected override void OnConnectedToDB(DbConnection connection, Identity identity)
     {
         foreach (UserTable user in connection.Db.User.Iter().OrderBy(m => m.Identity))
         {
-            if (!string.IsNullOrEmpty(user.Settings.Name))
+            if (!string.IsNullOrEmpty(user.Name))
             {
                 CreateItem(null, user);
             }
@@ -39,7 +41,9 @@ public class UserListHandler : NetworkedMonobehavior
         RunOnMainThread(() =>
         {
             UserItemSetter userItem = Instantiate(prefab);
-            userItem.gameObject.transform.SetParent(container.transform, false);
+
+            RectTransform parent = user.Online ? onlineContainer : offlineContainer;
+            userItem.gameObject.transform.SetParent(parent.transform, false);
 
             items[user.Identity] = userItem;
             userItem.SetData(user);
@@ -48,14 +52,13 @@ public class UserListHandler : NetworkedMonobehavior
 
     private void UpdateItem(EventContext ctx, UserTable oldValue, UserTable newValue)
     {
-        if (string.IsNullOrEmpty(oldValue.Settings.Name) && !string.IsNullOrEmpty(newValue.Settings.Name))
-        {
-            CreateItem(ctx, newValue);
-        }
-
         RunOnMainThread(() =>
         {
             UserItemSetter item = items[newValue.Identity];
+
+            RectTransform parent = newValue.Online ? onlineContainer : offlineContainer;
+            item.gameObject.transform.SetParent(parent.transform, false);
+
             item.SetData(newValue);
         });
     }

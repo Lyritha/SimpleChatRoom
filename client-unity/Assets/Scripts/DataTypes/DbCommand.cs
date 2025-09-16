@@ -1,13 +1,13 @@
-using UnityEngine;
+using System.Threading.Tasks;
 
-public record DbCommand
+public class DbCommand
 {
-    public string Target;
-    public object Payload;
+    public string Target { get; }
+    public object Payload { get; }
 
     public DbCommand(string target, object payload)
     {
-        Target = target; 
+        Target = target;
         Payload = payload;
     }
 }

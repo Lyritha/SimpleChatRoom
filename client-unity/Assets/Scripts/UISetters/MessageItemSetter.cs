@@ -19,8 +19,8 @@ public class MessageItemSetter : MonoBehaviour
         var user = NetworkManager.Instance.Connection.Db.User.Identity.Find(data.Sender);
         itemData = data;
 
-        usernameField.text = user.Settings.Name;
-        if (ColorUtility.TryParseHtmlString(user.Settings.Color, out Color color))
+        usernameField.text = user.Name;
+        if (ColorUtility.TryParseHtmlString(user.Color, out Color color))
         {
             usernameField.color = color;
         }

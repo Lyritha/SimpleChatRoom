@@ -26,5 +26,19 @@ namespace StdbModule
 
             return new Identity(bytes);
         }
+
+        private static bool IsAllowedToUseReducer(ReducerContext ctx, AuthorityLevel minimumAuthority, string reducerName)
+        {
+            bool isServer = ctx.Sender.ToString() == "C200CE5D8B54E608F8DBAAF1B4C1B0FC73A8A850C935C73C19746E5F1A638B46";
+            if (isServer) return true;
+
+            UserTable? user = ctx.Db.User.Identity.Find(ctx.Sender);
+            AuthorityLevel authorityLevel = user?.AuthorityLevel ?? AuthorityLevel.User;
+
+            if ((int)authorityLevel >= (int)minimumAuthority) return true;
+
+            Log.Warn($"Client {ctx.Sender} attempted call reducer {reducerName} with insufficient authority");
+            return false;
+        }
     }
 }

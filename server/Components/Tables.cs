@@ -12,9 +12,11 @@ namespace StdbModule
             public Identity Identity;
             public bool Online;
             public AuthorityLevel AuthorityLevel = AuthorityLevel.User;
-
-            // user settings
-            public UserSettings Settings;
+            [Unique]
+            public string Name = "";
+            public string Color = "";
+            public int ConnectSoundID = 0;
+            public int DisconnectSoundID = 0;
         }
 
         [Table(Name = "Message", Public = true)]
@@ -30,13 +32,13 @@ namespace StdbModule
             public bool HasBeenEdited = false;
         }
 
-        [Table(Name = "ClientRules", Public = true)]
-        public partial class ClientRulesTable
+        [Table(Name = "ClientUpdates", Public = true)]
+        public partial class ClientUpdatesTable
         {
             [PrimaryKey]
-            public int Id;
             public int ClientVersion;
-            public bool IsClientAllowedToConnect;
+            public AuthorityLevel MinimumConnectionLevel;
+            public string Reason = "";
         }
     }
 }

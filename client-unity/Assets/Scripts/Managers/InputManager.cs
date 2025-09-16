@@ -1,13 +1,15 @@
+using SpacetimeDB;
 using SpacetimeDB.Types;
 using System.Collections.Concurrent;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class InputManager : NetworkedSingleton<InputManager>
 {
     private readonly ConcurrentQueue<DbCommand> input_queue = new();
 
-    protected override void OnConnectedToDB(DbConnection connection)
+    protected override void OnConnectedToDB(DbConnection connection, Identity identity)
     {
         var cts = new CancellationTokenSource();
         var thread = new Thread(() => ProcessThread(connection, cts.Token));
@@ -59,6 +61,8 @@ public class InputManager : NetworkedSingleton<InputManager>
 
     public void EnqueueCommand<T>(string target, T payload)
     {
-        input_queue.Enqueue(new DbCommand(target, payload!));
+        var cmd = new DbCommand(target, payload!);
+        input_queue.Enqueue(cmd);
     }
+
 }
