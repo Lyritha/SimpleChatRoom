@@ -1,4 +1,5 @@
 using SpacetimeDB.Types;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -42,7 +43,10 @@ public class MessageItemSetter : MonoBehaviour
         }
 
         timestampField.text = TimestampFormatter.Format(data.Sent);
-        textField.text = data.Text;
+
+        string cleaned = Regex.Replace(data.Text, @"[\u2800-\u28FF]", "");
+        bool isEmptyString = string.IsNullOrWhiteSpace(cleaned);
+        textField.text = isEmptyString ? "Message contained invalid characters" : cleaned;
 
         editedText.gameObject.SetActive(data.HasBeenEdited);
         editToggle.gameObject.SetActive(data.Sender == NetworkManager.Instance.LocalIdentity);

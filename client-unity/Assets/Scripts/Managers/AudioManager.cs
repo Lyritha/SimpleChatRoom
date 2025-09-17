@@ -41,4 +41,12 @@ public class AudioManager : NetworkedSingleton<AudioManager>
             source.PlayOneShot(clip);
         }
     }
+
+    public void SetVolume(float volume)
+    {
+        if (source != null)
+        {
+            source.volume = volume;
+        }
+    }
 }

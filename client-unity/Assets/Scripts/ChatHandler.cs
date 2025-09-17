@@ -32,6 +32,8 @@ public class ChatHandler : NetworkedMonobehavior
         var messages = connection.Db.Message.Iter().OrderBy(m => m.MessageId).ToList();
         int index = 0;
 
+        LoadingScreenManager.Instance.AddLoadingOperation("Loading Messages");
+
         while (index < messages.Count)
         {
             CreateItem(null, messages[index]);
@@ -39,7 +41,8 @@ public class ChatHandler : NetworkedMonobehavior
             yield return new WaitForEndOfFrame();
         }
 
-        Debug.Log("All messages instantiated without dropping below 60 FPS");
+        LoadingScreenManager.Instance.CompleteLoadingOperation("Loading Messages");
+        yield return null;
     }
 
 

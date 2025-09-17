@@ -1,4 +1,5 @@
 using SpacetimeDB.Types;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 
@@ -21,7 +22,8 @@ public class MessageInputHandler : MonoBehaviour
 
         if (!string.IsNullOrWhiteSpace(text))
         {
-            MessageData data = new(text, "", ulong.MaxValue);
+            string cleaned = Regex.Replace(text, @"[\u2800-\u28FF]", "");
+            MessageData data = new(cleaned, "", ulong.MaxValue);
             InputManager.Instance.EnqueueCommand("SendMessage", data);
 
             inputField.text = "";

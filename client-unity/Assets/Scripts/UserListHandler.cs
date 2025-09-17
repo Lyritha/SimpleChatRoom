@@ -29,6 +29,8 @@ public class UserListHandler : NetworkedMonobehavior
         var user = connection.Db.User.Iter().OrderBy(m => m.Identity).ToList();
         int index = 0;
 
+        LoadingScreenManager.Instance.AddLoadingOperation("Loading Users");
+
         while (index < user.Count)
         {
             CreateItem(null, user[index]);
@@ -36,7 +38,8 @@ public class UserListHandler : NetworkedMonobehavior
             yield return new WaitForEndOfFrame();
         }
 
-        Debug.Log("All messages instantiated without dropping below 60 FPS");
+        LoadingScreenManager.Instance.CompleteLoadingOperation("Loading Users");
+        yield return null;
     }
 
     protected override void OnDisconnectedToDB(DbConnection connection)

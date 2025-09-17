@@ -97,7 +97,9 @@ public class UserSettingsMenu : NetworkedMonobehavior
         UserSettings settings = new()
         {
             Name = username,
-            Color = colorHex
+            Color = colorHex,
+            ConnectSoundId = (int)connectClipsSlider.value,
+            DisconnectSoundId = (int)disconnectClipsSlider.value
         };
 
         // decide to either register new user or update existing one
