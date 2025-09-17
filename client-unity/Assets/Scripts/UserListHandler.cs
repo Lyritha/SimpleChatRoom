@@ -1,5 +1,6 @@
 using SpacetimeDB;
 using SpacetimeDB.Types;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -17,22 +18,41 @@ public class UserListHandler : NetworkedMonobehavior
 
     protected override void OnConnectedToDB(DbConnection connection, Identity identity)
     {
-        foreach (UserTable user in connection.Db.User.Iter().OrderBy(m => m.Identity))
-        {
-            if (!string.IsNullOrEmpty(user.Name))
-            {
-                CreateItem(null, user);
-            }
-        }
+        StartCoroutine(InstantiateSpaced(connection));
 
         connection.Db.User.OnInsert += CreateItem;
         connection.Db.User.OnUpdate += UpdateItem;
+    }
+
+    private IEnumerator InstantiateSpaced(DbConnection connection)
+    {
+        var user = connection.Db.User.Iter().OrderBy(m => m.Identity).ToList();
+        int index = 0;
+
+        while (index < user.Count)
+        {
+            CreateItem(null, user[index]);
+            index++;
+            yield return new WaitForEndOfFrame();
+        }
+
+        Debug.Log("All messages instantiated without dropping below 60 FPS");
     }
 
     protected override void OnDisconnectedToDB(DbConnection connection)
     {
         connection.Db.User.OnInsert -= CreateItem;
         connection.Db.User.OnUpdate -= UpdateItem;
+
+        RunOnMainThread(() => {
+
+            foreach (UserItemSetter item in items.Values)
+            {
+                Destroy(item.gameObject);
+            }
+
+            items.Clear();
+        });
     }
 
 

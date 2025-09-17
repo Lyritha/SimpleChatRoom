@@ -1,10 +1,8 @@
 using SpacetimeDB;
 using SpacetimeDB.Types;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,29 +14,52 @@ public class ChatHandler : NetworkedMonobehavior
     private ScrollRect scrollRect;
     [SerializeField]
     private MessageItemSetter prefab;
-    [SerializeField]
-    private Dictionary<Identity, List<MessageItemSetter>> items = new();
 
+    private Dictionary<ulong, MessageItemSetter> itemsByMessageId = new();
+    private Dictionary<Identity, List<MessageItemSetter>> itemsBySender = new();
 
     protected override void OnConnectedToDB(DbConnection connection, Identity identity)
     {
-        foreach (MessageTable message in connection.Db.Message.Iter().OrderBy(m => m.Sent))
-        {
-            CreateItem(null, message);
-        }
+        StartCoroutine(InstantiateSpaced(connection));
 
         connection.Db.Message.OnInsert += CreateItem;
         connection.Db.Message.OnUpdate += UpdateItem;
         connection.Db.User.OnUpdate += UpdateUsernameInMessage;
     }
 
+    private IEnumerator InstantiateSpaced(DbConnection connection)
+    {
+        var messages = connection.Db.Message.Iter().OrderBy(m => m.MessageId).ToList();
+        int index = 0;
+
+        while (index < messages.Count)
+        {
+            CreateItem(null, messages[index]);
+            index++;
+            yield return new WaitForEndOfFrame();
+        }
+
+        Debug.Log("All messages instantiated without dropping below 60 FPS");
+    }
+
+
     protected override void OnDisconnectedToDB(DbConnection connection)
     {
         connection.Db.Message.OnInsert -= CreateItem;
         connection.Db.Message.OnUpdate -= UpdateItem;
         connection.Db.User.OnUpdate -= UpdateUsernameInMessage;
-    }
 
+        RunOnMainThread(() =>
+        {
+            foreach (MessageItemSetter message in itemsByMessageId.Values)
+            {
+                Destroy(message.gameObject);
+            }
+
+            itemsByMessageId.Clear();
+            itemsBySender.Clear();
+        });
+    }
 
     private void CreateItem(EventContext ctx = null, MessageTable message = null)
     {
@@ -46,16 +67,20 @@ public class ChatHandler : NetworkedMonobehavior
         {
             bool doScroll = scrollRect.verticalNormalizedPosition < 0.1f;
 
-            if (!items.TryGetValue(message.Sender, out List<MessageItemSetter> list))
-            {
-                list = new List<MessageItemSetter>();
-                items[message.Sender] = list;
-            }
-
             MessageItemSetter messageItem = Instantiate(prefab);
             messageItem.gameObject.transform.SetParent(container.transform, false);
             messageItem.SetData(message);
 
+            // Add to MessageId dictionary, for index based lookup
+            itemsByMessageId[message.MessageId] = messageItem;
+
+            // Add to Sender dictionary, create new list if one doesn't exist
+            Identity senderId = message.Sender;
+            if (!itemsBySender.TryGetValue(senderId, out var list))
+            {
+                list = new List<MessageItemSetter>();
+                itemsBySender[senderId] = list;
+            }
             list.Add(messageItem);
 
             if (doScroll)
@@ -70,8 +95,8 @@ public class ChatHandler : NetworkedMonobehavior
     {
         RunOnMainThread(() =>
         {
-            foreach (MessageItemSetter setter in items[newValue.Sender])
-                setter.SetData(newValue);
+            if (itemsByMessageId.TryGetValue(newValue.MessageId, out MessageItemSetter messageItem))
+                messageItem.SetData(newValue);
         });
     }
 
@@ -79,12 +104,9 @@ public class ChatHandler : NetworkedMonobehavior
     {
         RunOnMainThread(() =>
         {
-            if (items.TryGetValue(newRow.Identity, out List<MessageItemSetter> setters))
-            {
-                foreach (MessageItemSetter setter in setters)
-                    setter.UpdateData();
-            }
+            if (itemsBySender.TryGetValue(newRow.Identity, out List<MessageItemSetter> messages))
+                foreach (MessageItemSetter item in messages)
+                    item.UpdateData();
         });
     }
 }
-
